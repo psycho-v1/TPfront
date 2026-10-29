@@ -22,6 +22,17 @@ It works for invoices, quotes, orders, receipts and reports.
 2. Use `dist/footer-modern.html` as the footer. It matches the theme's colours.
 3. Pick the theme on your invoices (or set it as the default theme).
 
+## Tax Invoice theme
+
+`theme/tax-invoice.html` is a second theme, built separately:
+
+- Company ("From") and customer ("Bill to") side by side on one row
+- The title shows **TAX INVOICE** whenever any line item has tax (e.g. GST 8%), and plain **INVOICE** otherwise
+- Issue and due dates in a strip under the parties, green rule-style item table, large green grand total
+
+Install it the same way: **Settings → Themes → New Theme**, paste the whole file, save, and pick it on your invoices.
+It pairs with `dist/footer-modern.html`.
+
 ## Change it
 
 - Text (terms, bank details): edit `src/footer.template.html` (classic) or `src/footer-modern.template.html` (modern)

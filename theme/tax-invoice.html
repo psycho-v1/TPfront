@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!--
+  Tropical Fruits Pvt Ltd - "Tax Invoice" theme for Manager.io
+  Source: https://github.com/psycho-v1/TPfront
+
+  - Company (From) and customer (Bill to) sit side by side on one row.
+  - When any line item carries tax, the title "Invoice" becomes "Tax Invoice".
+  Works for quotes, orders, receipts and reports too (they keep their own titles).
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>View</title>
+<style>
+:root {
+  --bg: #f5f5f5;
+  --paper: #fff;
+  --green: #0c734f;
+  --green-deep: #08523a;
+  --tint: #f1f7f4;
+  --ink: #18201c;
+  --soft: #66746d;
+  --rule: #dfe7e3;
+}
+/* Do not change the body background-color: the page sits in an iframe whose parent uses the same --bg. */
+body { background-color: var(--bg); display: flex; margin: 0; padding: 0; }
+main {
+  background-color: #fff; margin: 1rem 1.5rem; border: 1px solid #e5e5e5; border-radius: 5px;
+  box-shadow: 0px 4px 6px rgb(0 0 0 / 0.05); padding: 2.25rem; min-width: 80ch;
+  color: var(--ink);
+  font: 12.5px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #292524; }
+  main { border: 1px solid #0c0a09; box-shadow: 0px 4px 6px rgb(0 0 0 / 0.50); }
+}
+* { box-sizing: border-box; }
+a { color: inherit; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Title row */
+.top { display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; padding-bottom: 1rem; border-bottom: 3px solid var(--green); }
+.top .logo { max-height: 64px; max-width: 180px; object-fit: contain; display: block; }
+.top .brand-text { font-size: 15px; font-weight: 800; color: var(--green-deep); letter-spacing: .02em; }
+.title-block { text-align: end; }
+.title { margin: 0; font-size: 28px; line-height: 1; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--green-deep); }
+.ref { margin-top: .45rem; font-size: 13px; color: var(--soft); }
+.ref b { color: var(--ink); }
+.subtitle { color: var(--soft); }
+.pill { display: inline-block; margin-top: .5rem; padding: .15rem .65rem; border-radius: 4px; border: 1.5px solid currentColor; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.pill.positive { color: #0c734f; }
+.pill.negative { color: #b42318; }
+.pill.neutral  { color: #5b6670; }
+
+/* From / Bill to on one row */
+.parties { display: grid; grid-template-columns: 1fr 1fr; margin-top: 1.4rem; }
+.party { padding: 0 1.5rem 0 0; }
+.party + .party { padding: 0 0 0 1.5rem; border-inline-start: 1px solid var(--rule); }
+.cap { font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--green); margin-bottom: .35rem; }
+.p-name { font-size: 14.5px; font-weight: 700; }
+.p-addr { white-space: pre-line; }
+.p-meta { color: var(--soft); font-size: 11.5px; margin-top: .25rem; }
+.p-meta div span { color: var(--ink); }
+
+/* Key dates strip */
+.strip { display: flex; flex-wrap: wrap; margin-top: 1.4rem; background: var(--tint); border-radius: 6px; }
+.strip > div { flex: 1 1 0; min-width: 130px; padding: .65rem 1rem; }
+.strip > div + div { border-inline-start: 1px solid var(--rule); }
+.strip .v { font-weight: 700; font-size: 13px; }
+.strip .v.em { color: var(--green-deep); }
+
+.extra { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: .8rem 1.5rem; margin-top: 1.2rem; }
+.extra .v { font-weight: 600; white-space: pre-line; }
+.nest { margin-top: .15rem; padding-inline-start: .6rem; border-inline-start: 2px solid var(--rule); font-size: 11.5px; }
+.nest span { color: var(--soft); }
+.description { margin-top: 1.4rem; white-space: pre-line; }
+img.inline { max-height: 48px; max-width: 120px; vertical-align: middle; }
+
+/* Lines */
+table.lines { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+table.lines th {
+  padding: 0 .6rem .5rem; text-align: start; white-space: nowrap;
+  font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--green);
+  border-bottom: 2px solid var(--green);
+}
+table.lines thead tr + tr th { padding-top: .4rem; }
+table.lines td { padding: .5rem .6rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+table.lines tr.group td { padding-top: .9rem; font-weight: 800; color: var(--green-deep); border-bottom-color: var(--green); }
+table.lines tr.total td { font-weight: 800; border-top: 1.5px solid var(--ink); border-bottom: none; }
+table.lines tr.taxed td.taxcell { color: var(--green-deep); font-weight: 600; }
+table.lines .a-end { text-align: end; }
+table.lines .a-right { text-align: right; }
+table.lines .a-center { text-align: center; }
+table.lines .nowrap { white-space: nowrap; }
+table.lines .em { font-weight: 700; }
+table.lines .hug { width: 1%; white-space: nowrap; }
+table.lines .d1 > td:first-child { padding-inline-start: 1.5rem; }
+table.lines .d2 > td:first-child { padding-inline-start: 2.4rem; }
+table.lines .d3 > td:first-child { padding-inline-start: 3.3rem; }
+tr { break-inside: avoid; }
+thead { display: table-header-group; }
+
+/* Totals */
+.sum { display: flex; justify-content: flex-end; margin-top: .9rem; break-inside: avoid; }
+.sum table { border-collapse: collapse; min-width: 300px; }
+.sum td { padding: .35rem 0; }
+.sum td:last-child { text-align: right; padding-inline-start: 2.5rem; font-weight: 600; }
+.sum tr.grand td { padding-top: .6rem; border-top: 2px solid var(--green); font-size: 17px; font-weight: 800; color: var(--green-deep); }
+
+.foot { margin-top: 1.6rem; padding-top: 1rem; border-top: 1px solid var(--rule); break-inside: avoid; }
+.foot > div + div { margin-top: .9rem; }
+.empty { color: var(--soft); }
+
+@page { margin: 10mm; }
+@media print {
+  body { background-color: initial; display: initial; }
+  main { padding: 0; border: initial; box-shadow: initial; border-radius: initial; margin: 0; min-width: initial; }
+}
+</style>
+</head>
+<body>
+<main></main>
+<script>
+fetch('/api4/view-v1' + window.location.search, {
+  headers: { 'Accept': 'application/json' },
+  credentials: 'same-origin',
+})
+  .then(response => response.json())
+  .then(data => { renderDocument(data); });
+
+const esc = s => String(s == null ? '' : s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const has = s => s != null && String(s).trim() !== '';
+
+function img(i, alt) {
+  if (!i || !i.url) return '';
+  return `<img class="inline" src="${esc(i.url)}" alt="${esc(alt)}"${i.width ? ` width="${esc(i.width)}"` : ''}${i.height ? ` height="${esc(i.height)}"` : ''}>`;
+}
+const linked = (l, inner) => l && l.url ? `<a href="${esc(l.url)}" target="_top">${inner}</a>` : inner;
+const val = f => linked(f.link, f.image ? img(f.image, f.text || f.label) : esc(f.text));
+const nest = fs => fs && fs.length
+  ? '<div class="nest">' + fs.map(s => `<div><span>${esc(s.label)}:</span> ${val(s)}${nest(s.fields)}</div>`).join('') + '</div>' : '';
+
+/* ---- Tax detection ---- */
+const TAX_WORD = /\b(tax|taxes|gst|tgst|vat|sst)\b/i;
+function leaves(cols) {
+  const out = [];
+  (cols || []).forEach(c => c.subcolumns && c.subcolumns.length ? out.push(...leaves(c.subcolumns)) : out.push(c));
+  return out;
+}
+function isTaxColumn(c) { return TAX_WORD.test(c.key || '') || TAX_WORD.test(c.label || ''); }
+function eachLeafRow(rows, fn) {
+  (rows || []).forEach(r => r.rows && r.rows.length ? eachLeafRow(r.rows, fn) : (!r.isTotalRow && fn(r)));
+}
+function hasTaxedLines(data) {
+  const t = data.table;
+  if (t) {
+    const cols = leaves(t.columns);
+    const taxIdx = cols.map((c, i) => isTaxColumn(c) ? i : -1).filter(i => i >= 0);
+    let found = false;
+    if (taxIdx.length) eachLeafRow(t.rows, r => {
+      taxIdx.forEach(i => {
+        const cell = (r.cells || [])[i];
+        const txt = cell && cell.text ? cell.text.trim() : '';
+        if (txt && !/^(0([.,]0+)?%?|-|—|exempt|zero[- ]rated|n\/a)$/i.test(txt)) found = true;
+      });
+    });
+    if (found) return true;
+  }
+  // Fallback: a tax line in the totals with a non-zero amount.
+  return (data.totals || []).some(tt =>
+    (TAX_WORD.test(tt.class || '') || TAX_WORD.test(tt.key || '') || TAX_WORD.test(tt.label || '')) &&
+    Number(String(tt.number != null ? tt.number : '').replace(/[^0-9.-]/g, '')) !== 0 && has(tt.number));
+}
+function documentTitle(data, taxed) {
+  const title = data.title || '';
+  if (taxed && /invoice/i.test(title) && !/tax\s+invoice/i.test(title) && !/credit|debit|purchase/i.test(title)) return 'Tax Invoice';
+  return title;
+}
+
+/* ---- Table ---- */
+function cls(c, extra) {
+  return [c.align === 'end' ? 'a-end' : c.align === 'right' ? 'a-right' : c.align === 'center' ? 'a-center' : '',
+    c.nowrap ? 'nowrap' : '', c.emphasis ? 'em' : '', c.shrinkToFit ? 'hug' : '', isTaxColumn(c) ? 'taxcell' : '', extra || '']
+    .filter(Boolean).join(' ');
+}
+function thead(cols) {
+  if (!cols.some(c => c.subcolumns && c.subcolumns.length))
+    return '<tr>' + cols.map(c => `<th class="${cls(c)}">${esc(c.label)}</th>`).join('') + '</tr>';
+  let a = '', b = '';
+  cols.forEach(c => {
+    if (c.subcolumns && c.subcolumns.length) {
+      const l = leaves(c.subcolumns);
+      a += `<th colspan="${l.length}" class="a-center">${esc(c.label)}</th>`;
+      b += l.map(s => `<th class="${cls(s)}">${esc(s.label)}</th>`).join('');
+    } else a += `<th rowspan="2" class="${cls(c)}">${esc(c.label)}</th>`;
+  });
+  return `<tr>${a}</tr><tr>${b}</tr>`;
+}
+const cell = c => c ? linked(c.link, c.image ? img(c.image, c.text) : esc(c.text)) : '';
+function tbody(rows, cols, depth) {
+  return (rows || []).map(r => {
+    const d = Math.min(depth, 3), dc = d ? ` d${d}` : '';
+    if (r.rows && r.rows.length) {
+      const head = r.cells && r.cells[0];
+      return (head ? `<tr class="group${dc}"><td colspan="${cols.length}">${cell(head)}</td></tr>` : '') + tbody(r.rows, cols, depth + 1);
+    }
+    const taxed = cols.some((c, i) => isTaxColumn(c) && has((r.cells || [])[i] && r.cells[i].text));
+    return `<tr class="${r.isTotalRow ? 'total' : 'line'}${taxed ? ' taxed' : ''}${dc}">` +
+      cols.map((c, i) => `<td class="${cls(c, 'num')}">${cell((r.cells || [])[i])}</td>`).join('') + '</tr>';
+  }).join('');
+}
+
+/* ---- Render ---- */
+function renderDocument(data) {
+  const main = document.querySelector('main');
+  if (!data || data.error) {
+    main.innerHTML = `<p class="empty">${esc((data && (data.message || data.error)) || 'This document could not be loaded.')}</p>`;
+    return;
+  }
+  document.documentElement.dir = data.direction === 'rtl' ? 'rtl' : 'ltr';
+  if (data.language) document.documentElement.lang = data.language;
+
+  const taxed = hasTaxedLines(data);
+  const title = documentTitle(data, taxed);
+  const biz = data.business || {};
+  const bizName = biz.name || data.businessName;
+  document.title = [title, data.reference].filter(has).join(' ') + (has(bizName) ? ' — ' + bizName : '');
+
+  // Title row
+  let h = '<div class="top"><div>';
+  h += biz.logo ? `<img class="logo" src="${esc(biz.logo)}" alt="${esc(bizName || 'Logo')}">`
+                : (has(bizName) ? `<div class="brand-text">${esc(bizName)}</div>` : '');
+  h += `</div><div class="title-block"><h1 class="title">${esc(title)}</h1>`;
+  if (has(data.reference)) h += `<div class="ref">No. <b>${esc(data.reference)}</b></div>`;
+  (data.subtitles || []).filter(has).forEach(s => { h += `<div class="subtitle">${esc(s)}</div>`; });
+  if (data.status && has(data.status.text)) {
+    const tone = ['positive', 'negative', 'neutral'].includes(data.status.tone) ? data.status.tone : 'neutral';
+    h += `<div><span class="pill ${tone}">${esc(data.status.text)}</span></div>`;
+  }
+  h += '</div></div>';
+
+  // From | Bill to — same row
+  const rec = data.recipient;
+  const hasBiz = has(bizName) || has(biz.address) || (biz.fields || []).length;
+  const hasRec = rec && [rec.name, rec.address, rec.code, rec.email].some(has);
+  if (hasBiz || hasRec) {
+    h += '<div class="parties"><div class="party">';
+    if (hasBiz) {
+      h += '<div class="cap">From</div>';
+      if (has(bizName)) h += `<div class="p-name">${esc(bizName)}</div>`;
+      if (has(biz.address)) h += `<div class="p-addr">${esc(biz.address)}</div>`;
+      if ((biz.fields || []).length)
+        h += '<div class="p-meta">' + biz.fields.map(f => `<div>${esc(f.label)}: <span>${val(f)}</span></div>`).join('') + '</div>';
+    }
+    h += '</div><div class="party">';
+    if (hasRec) {
+      h += '<div class="cap">Bill to</div>';
+      if (has(rec.name)) h += `<div class="p-name">${esc(rec.name)}</div>`;
+      if (has(rec.address)) h += `<div class="p-addr">${esc(rec.address)}</div>`;
+      const extra = [rec.code, rec.email].filter(has).map(esc);
+      if (extra.length) h += `<div class="p-meta">${extra.join(' · ')}</div>`;
+    }
+    h += '</div></div>';
+  }
+
+  // Key dates strip + other fields
+  const fields = data.fields || [];
+  const top = fields.filter(f => f.displayAtTheTop), rest = fields.filter(f => !f.displayAtTheTop);
+  if (top.length)
+    h += '<div class="strip">' + top.map(f =>
+      `<div><div class="cap">${esc(f.label)}</div><div class="v${f.emphasis ? ' em' : ''}">${val(f)}</div>${nest(f.fields)}</div>`).join('') + '</div>';
+  if (rest.length)
+    h += '<div class="extra">' + rest.map(f =>
+      `<div><div class="cap">${esc(f.label)}</div><div class="v">${val(f)}</div>${nest(f.fields)}</div>`).join('') + '</div>';
+
+  // Lines
+  const t = data.table;
+  if (t) {
+    if (has(t.description)) h += `<div class="description">${esc(t.description)}</div>`;
+    const cols = leaves(t.columns);
+    if (cols.length && (t.rows || []).length)
+      h += `<table class="lines"><thead>${thead(t.columns || [])}</thead><tbody>${tbody(t.rows, cols, 0)}</tbody></table>`;
+  }
+
+  // Totals
+  const totals = data.totals || [];
+  if (totals.length) {
+    const anyEm = totals.some(tt => tt.emphasis);
+    h += '<div class="sum"><table>' + totals.map((tt, i) =>
+      `<tr class="${tt.emphasis || (!anyEm && i === totals.length - 1) ? 'grand' : ''}"><td>${esc(tt.label)}</td><td class="num">${esc(tt.text)}</td></tr>`).join('');
+    h += '</table></div>';
+  }
+
+  // Footers (pre-rendered HTML from Manager)
+  const foots = (data.footers || []).filter(has);
+  if (foots.length) h += '<div class="foot">' + foots.map(f => `<div>${f}</div>`).join('') + '</div>';
+
+  main.innerHTML = h;
+}
+</script>
+</body>
+</html>
