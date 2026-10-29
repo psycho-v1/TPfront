@@ -30,12 +30,25 @@ It works for invoices, quotes, orders, receipts and reports.
 - The title shows **TAX INVOICE** whenever any line item has tax (e.g. GST 8%), and plain **INVOICE** otherwise
 - Issue and due dates in a strip under the parties, green rule-style item table, large green grand total
 
+- The Tropical Fruits logo (`brand/logo.svg`) is built into the theme and always shows at the top; the seal appears only in the footer
+
 Install it the same way: **Settings → Themes → New Theme**, paste the whole file, save, and pick it on your invoices.
 It pairs with `dist/footer-modern.html`.
+
+## Logo files
+
+`brand/` holds the cleaned-up logo, traced from the original into a vector so it stays sharp at any size:
+
+- `logo.svg` - vector, use this wherever possible (website, print, signage)
+- `logo-2000.png` - 2000 px wide, transparent background
+- `logo-2000-white-bg.png` - 2000 px wide, white background
+- `logo-600.png` - 600 px wide, transparent background (email signatures, social media)
 
 ## Change it
 
 - Text (terms, bank details): edit `src/footer.template.html` (classic) or `src/footer-modern.template.html` (modern)
 - Seal: replace `src/seal.jpg`
+- Tax Invoice theme layout: edit `src/tax-invoice.template.html` (the build writes `theme/tax-invoice.html`)
+- Logo: replace `brand/logo.svg`
 
 Then run `python build.py`, or just push to `main` and the GitHub Action rebuilds `dist/` for you.

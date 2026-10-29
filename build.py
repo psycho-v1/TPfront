@@ -5,7 +5,8 @@ Edit src/footer.template.html (text) or src/seal.jpg (image), then run:
 Outputs:
     dist/footer.html        - classic footer (seal embedded, works in PDFs)
     dist/footer-modern.html - footer styled to match theme/theme.html
-    dist/footer-url.html  - same, but loads the seal from GitHub (does NOT show in Manager PDFs)
+    theme/tax-invoice.html  - Tax Invoice theme with the logo (brand/logo.svg) built in
+    dist/footer-url.html    - same, but loads the seal from GitHub (does NOT show in Manager PDFs)
 """
 import base64, re, pathlib
 
@@ -26,4 +27,7 @@ url = "https://raw.githubusercontent.com/psycho-v1/TPfront/main/src/seal.jpg"
 
 modern = one_line((root / "src/footer-modern.template.html").read_text(encoding="utf-8"))
 (root / "dist/footer-modern.html").write_text(modern.replace("{{SEAL}}", "data:image/jpeg;base64," + seal), encoding="utf-8")
-print("Built dist/footer.html, dist/footer-modern.html and dist/footer-url.html")
+logo_svg = (root / "brand/logo.svg").read_text(encoding="utf-8").strip()
+theme = (root / "src/tax-invoice.template.html").read_text(encoding="utf-8")
+(root / "theme/tax-invoice.html").write_text(theme.replace("{{LOGO_SVG}}", logo_svg), encoding="utf-8")
+print("Built dist/footer.html, dist/footer-modern.html, dist/footer-url.html and theme/tax-invoice.html")
