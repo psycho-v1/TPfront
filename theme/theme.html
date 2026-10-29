@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<!--
+  Tropical Fruits Pvt Ltd - modern document theme for Manager.io
+  Source: https://github.com/psycho-v1/TPfront
+  Works for invoices, quotes, orders, receipts, statements and reports.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>View</title>
+<style>
+:root {
+  --bg: #f5f5f5;
+  --paper: #fff;
+  --brand: #0c734f;
+  --brand-dark: #08523a;
+  --brand-soft: #e8f3ee;
+  --ink: #1b2420;
+  --muted: #6b7a73;
+  --line: #e3e9e6;
+  --zebra: #f7faf8;
+  --pos: #0c734f; --pos-bg: #e3f4ec;
+  --neg: #b42318; --neg-bg: #fdecea;
+  --neu: #5b6670; --neu-bg: #eef1f3;
+}
+/* Do not change the body background-color: the page sits in an iframe whose parent uses the same --bg. */
+body { background-color: var(--bg); display: flex; margin: 0; padding: 0; }
+main {
+  background-color: var(--paper); margin: 1rem 1.5rem; border: 1px solid #e5e5e5; border-radius: 5px;
+  box-shadow: 0px 4px 6px rgb(0 0 0 / 0.05); padding: 2rem; min-width: 80ch;
+  color: var(--ink);
+  font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #292524; --paper: #1c1917; }
+  main { border: 1px solid #0c0a09; box-shadow: 0px 4px 6px rgb(0 0 0 / 0.50); }
+}
+/* The document itself always uses light "paper" colours so screen matches print. */
+main { --paper: #fff; background-color: #fff; }
+
+* { box-sizing: border-box; }
+a { color: inherit; }
+
+/* ---------- Header ---------- */
+.accent { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--brand-dark), var(--brand) 60%, #3fae7f); margin-bottom: 1.75rem; }
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; }
+.biz { display: flex; gap: 1rem; align-items: flex-start; max-width: 55%; }
+.biz img.logo { max-height: 72px; max-width: 160px; object-fit: contain; }
+.biz-name { font-size: 17px; font-weight: 700; letter-spacing: .01em; color: var(--brand-dark); }
+.biz-addr { color: var(--muted); white-space: pre-line; margin-top: .15rem; }
+.biz-fields { margin-top: .35rem; color: var(--muted); font-size: 12px; }
+.doc { text-align: end; }
+.doc-title { font-size: 30px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--brand); line-height: 1.1; margin: 0; }
+.doc-ref { font-size: 14px; font-weight: 600; margin-top: .3rem; }
+.doc-sub { color: var(--muted); }
+.badge { display: inline-block; margin-top: .55rem; padding: .2rem .7rem; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.badge.positive { color: var(--pos); background: var(--pos-bg); }
+.badge.negative { color: var(--neg); background: var(--neg-bg); }
+.badge.neutral  { color: var(--neu); background: var(--neu-bg); }
+
+/* ---------- Parties & meta ---------- */
+.parties { display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; margin-top: 1.75rem; }
+.card { background: var(--brand-soft); border-radius: 10px; padding: 1rem 1.15rem; }
+.label { font-size: 10.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--brand); margin-bottom: .3rem; }
+.to-name { font-size: 15px; font-weight: 700; }
+.to-addr { white-space: pre-line; color: var(--ink); }
+.to-extra { color: var(--muted); font-size: 12px; margin-top: .2rem; }
+.meta { display: grid; grid-template-columns: auto auto; column-gap: 1.25rem; row-gap: .45rem; align-content: start; padding: 1rem 0; }
+.meta dt { color: var(--muted); }
+.meta dd { margin: 0; font-weight: 600; text-align: end; }
+.meta dd.em, .fields .em { color: var(--brand-dark); }
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .75rem 1.5rem; margin-top: 1.25rem; }
+.fields .f-val { font-weight: 600; white-space: pre-line; }
+.sub-fields { margin: .15rem 0 0; padding-inline-start: .75rem; border-inline-start: 2px solid var(--line); }
+.sub-fields div { font-size: 12px; }
+.sub-fields span { color: var(--muted); }
+.desc { margin-top: 1.5rem; white-space: pre-line; }
+img.inline { max-height: 48px; max-width: 120px; vertical-align: middle; }
+
+/* ---------- Table ---------- */
+table.items { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+table.items thead th {
+  background: var(--brand); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  padding: .6rem .7rem; text-align: start; white-space: nowrap;
+}
+table.items thead tr:first-child th:first-child { border-start-start-radius: 8px; }
+table.items thead tr:first-child th:last-child  { border-start-end-radius: 8px; }
+table.items thead tr + tr th { background: var(--brand-dark); }
+table.items td { padding: .55rem .7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.items tbody tr.leaf:nth-child(even) td { background: var(--zebra); }
+table.items tr.group td { background: var(--brand-soft); font-weight: 700; color: var(--brand-dark); }
+table.items tr.total td { font-weight: 700; border-top: 2px solid var(--brand); background: #fff; }
+table.items .end   { text-align: end; }
+table.items .right { text-align: right; }
+table.items .center{ text-align: center; }
+table.items .nowrap { white-space: nowrap; }
+table.items .em { font-weight: 700; }
+table.items .shrink { width: 1%; white-space: nowrap; }
+table.items .depth-1 > td:first-child { padding-inline-start: 1.6rem; }
+table.items .depth-2 > td:first-child { padding-inline-start: 2.5rem; }
+table.items .depth-3 > td:first-child { padding-inline-start: 3.4rem; }
+tr { break-inside: avoid; }
+thead { display: table-header-group; }
+
+/* ---------- Totals ---------- */
+.totals { display: flex; justify-content: flex-end; margin-top: 1rem; break-inside: avoid; }
+.totals-box { min-width: 300px; }
+.t-row { display: flex; justify-content: space-between; gap: 2rem; padding: .4rem .9rem; }
+.t-row span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+.t-row.grand { margin-top: .4rem; background: var(--brand); color: #fff; border-radius: 8px; padding: .7rem .9rem; font-size: 15px; font-weight: 800; }
+.t-row.grand span:last-child { font-weight: 800; }
+
+/* ---------- Footers ---------- */
+.footers { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--line); break-inside: avoid; }
+.footers > div + div { margin-top: 1rem; }
+
+.empty { color: var(--muted); }
+
+@page { margin: 10mm; }
+@media print {
+  body { background-color: initial; display: initial; }
+  main { padding: 0; border: initial; box-shadow: initial; border-radius: initial; margin: 0; min-width: initial; }
+}
+</style>
+</head>
+<body>
+<main></main>
+<script>
+fetch('/api4/view-v1' + window.location.search, {
+  headers: { 'Accept': 'application/json' },
+  credentials: 'same-origin',
+})
+  .then(response => response.json())
+  .then(data => { renderDocument(data); });
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function has(s) { return s != null && String(s).trim() !== ''; }
+
+function imgHtml(img, alt, cls) {
+  if (!img || !img.url) return '';
+  const w = img.width ? ` width="${esc(img.width)}"` : '';
+  const h = img.height ? ` height="${esc(img.height)}"` : '';
+  return `<img class="${cls || 'inline'}" src="${esc(img.url)}" alt="${esc(alt)}"${w}${h}>`;
+}
+function linkWrap(link, inner) {
+  return link && link.url ? `<a href="${esc(link.url)}" target="_top">${inner}</a>` : inner;
+}
+function valueHtml(f) {
+  const inner = f.image ? imgHtml(f.image, f.text || f.label) : esc(f.text);
+  return linkWrap(f.link, inner);
+}
+function subFieldsHtml(fields) {
+  if (!fields || !fields.length) return '';
+  return '<div class="sub-fields">' + fields.map(sf =>
+    `<div><span>${esc(sf.label)}:</span> ${valueHtml(sf)}${subFieldsHtml(sf.fields)}</div>`).join('') + '</div>';
+}
+
+function alignClass(a) { return a === 'end' ? 'end' : a === 'right' ? 'right' : a === 'center' ? 'center' : ''; }
+function leafColumns(cols) {
+  const out = [];
+  (cols || []).forEach(c => { if (c.subcolumns && c.subcolumns.length) out.push(...leafColumns(c.subcolumns)); else out.push(c); });
+  return out;
+}
+function colClasses(c) {
+  return [alignClass(c.align), c.nowrap ? 'nowrap' : '', c.emphasis ? 'em' : '', c.shrinkToFit ? 'shrink' : '']
+    .filter(Boolean).join(' ');
+}
+function headerHtml(cols) {
+  const nested = cols.some(c => c.subcolumns && c.subcolumns.length);
+  if (!nested) return '<tr>' + cols.map(c => `<th class="${colClasses(c)}">${esc(c.label)}</th>`).join('') + '</tr>';
+  let top = '', bottom = '';
+  cols.forEach(c => {
+    if (c.subcolumns && c.subcolumns.length) {
+      const leaves = leafColumns(c.subcolumns);
+      top += `<th colspan="${leaves.length}" class="center">${esc(c.label)}</th>`;
+      bottom += leaves.map(s => `<th class="${colClasses(s)}">${esc(s.label)}</th>`).join('');
+    } else {
+      top += `<th rowspan="2" class="${colClasses(c)}">${esc(c.label)}</th>`;
+    }
+  });
+  return `<tr>${top}</tr><tr>${bottom}</tr>`;
+}
+function cellHtml(cell) {
+  if (!cell) return '';
+  const inner = cell.image ? imgHtml(cell.image, cell.text) : esc(cell.text);
+  return linkWrap(cell.link, inner);
+}
+function rowsHtml(rows, leaves, depth) {
+  let html = '';
+  (rows || []).forEach(r => {
+    const d = Math.min(depth, 3);
+    const dcls = d ? ` depth-${d}` : '';
+    if (r.rows && r.rows.length) {
+      const head = r.cells && r.cells[0];
+      if (head) html += `<tr class="group${dcls}"><td colspan="${leaves.length}">${cellHtml(head)}</td></tr>`;
+      html += rowsHtml(r.rows, leaves, depth + 1);
+    } else {
+      const cls = r.isTotalRow ? 'total' : 'leaf';
+      html += `<tr class="${cls}${dcls}">` +
+        leaves.map((c, i) => `<td class="${colClasses(c)}">${cellHtml((r.cells || [])[i])}</td>`).join('') + '</tr>';
+    }
+  });
+  return html;
+}
+
+function renderDocument(data) {
+  const main = document.querySelector('main');
+  if (!data || data.error) {
+    main.innerHTML = `<p class="empty">${esc((data && (data.message || data.error)) || 'This document could not be loaded.')}</p>`;
+    return;
+  }
+  const dir = data.direction === 'rtl' ? 'rtl' : 'ltr';
+  document.documentElement.dir = dir;
+  if (data.language) document.documentElement.lang = data.language;
+
+  const biz = data.business;
+  const bizName = (biz && biz.name) || data.businessName;
+  document.title = [data.title, data.reference].filter(has).join(' ') + (has(bizName) ? ' — ' + bizName : '');
+
+  let h = '<div class="accent"></div><div class="head"><div class="biz">';
+  if (biz && biz.logo) h += `<img class="logo" src="${esc(biz.logo)}" alt="${esc(bizName || 'Logo')}">`;
+  h += '<div>';
+  if (has(bizName)) h += `<div class="biz-name">${esc(bizName)}</div>`;
+  if (biz && has(biz.address)) h += `<div class="biz-addr">${esc(biz.address)}</div>`;
+  if (biz && biz.fields && biz.fields.length) {
+    h += '<div class="biz-fields">' + biz.fields.map(f => `<div>${esc(f.label)}: ${valueHtml(f)}</div>`).join('') + '</div>';
+  }
+  h += '</div></div><div class="doc">';
+  h += `<h1 class="doc-title">${esc(data.title)}</h1>`;
+  if (has(data.reference)) h += `<div class="doc-ref"># ${esc(data.reference)}</div>`;
+  (data.subtitles || []).forEach(s => { if (has(s)) h += `<div class="doc-sub">${esc(s)}</div>`; });
+  if (data.status && has(data.status.text)) {
+    const tone = ['positive', 'negative', 'neutral'].includes(data.status.tone) ? data.status.tone : 'neutral';
+    h += `<div><span class="badge ${tone}">${esc(data.status.text)}</span></div>`;
+  }
+  h += '</div></div>';
+
+  const fields = data.fields || [];
+  const topFields = fields.filter(f => f.displayAtTheTop);
+  const otherFields = fields.filter(f => !f.displayAtTheTop);
+  const rec = data.recipient;
+  const hasRec = rec && (has(rec.name) || has(rec.address) || has(rec.code) || has(rec.email));
+
+  if (hasRec || topFields.length) {
+    h += '<div class="parties">';
+    if (hasRec) {
+      h += '<div class="card"><div class="label">Bill to</div>';
+      if (has(rec.name)) h += `<div class="to-name">${esc(rec.name)}</div>`;
+      if (has(rec.address)) h += `<div class="to-addr">${esc(rec.address)}</div>`;
+      const extra = [rec.code, rec.email].filter(has).map(esc).join(' · ');
+      if (extra) h += `<div class="to-extra">${extra}</div>`;
+      h += '</div>';
+    } else {
+      h += '<div></div>';
+    }
+    if (topFields.length) {
+      h += '<dl class="meta">' + topFields.map(f =>
+        `<dt>${esc(f.label)}</dt><dd class="${f.emphasis ? 'em' : ''}">${valueHtml(f)}${subFieldsHtml(f.fields)}</dd>`).join('') + '</dl>';
+    }
+    h += '</div>';
+  }
+
+  if (otherFields.length) {
+    h += '<div class="fields">' + otherFields.map(f =>
+      `<div><div class="label">${esc(f.label)}</div><div class="f-val ${f.emphasis ? 'em' : ''}">${valueHtml(f)}</div>${subFieldsHtml(f.fields)}</div>`).join('') + '</div>';
+  }
+
+  const t = data.table;
+  if (t) {
+    if (has(t.description)) h += `<div class="desc">${esc(t.description)}</div>`;
+    const leaves = leafColumns(t.columns);
+    if (leaves.length && t.rows && t.rows.length) {
+      h += `<table class="items"><thead>${headerHtml(t.columns || [])}</thead><tbody>${rowsHtml(t.rows, leaves, 0)}</tbody></table>`;
+    }
+  }
+
+  const totals = data.totals || [];
+  if (totals.length) {
+    h += '<div class="totals"><div class="totals-box">' + totals.map(tt =>
+      `<div class="t-row${tt.emphasis ? ' grand' : ''}"><span>${esc(tt.label)}</span><span>${esc(tt.text)}</span></div>`).join('') + '</div></div>';
+  }
+
+  const footers = (data.footers || []).filter(has);
+  if (footers.length) h += '<div class="footers">' + footers.map(f => `<div>${f}</div>`).join('') + '</div>';
+
+  main.innerHTML = h;
+}
+</script>
+</body>
+</html>
